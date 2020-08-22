@@ -1,0 +1,28 @@
+[package]
+name = "aa_standalone"
+version = "0.1.0"
+authors = ["Benedict Gaster <benedict.gaster@uwe.ac.uk>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#web-view = { version = "0.6.3" }
+web-view = { path = "../audioplugin_wasm/external/web-view/" }
+serde = { version = "1.0.115", features = ["derive"] }
+serde_json = { version = "1.0.57" }
+serde_repr = { version = "0.1.6" }
+curl = { version = "0.4.33"}
+crossbeam-channel = { version = "0.4.3" }
+
+
+aa_wasmtime = { path = "../aa_wasmtime/" }
+
+anyhow = { version = "1.0.32" }
+thiserror = { version = "1.0.20" }
+
+portaudio = "0.7.0"
+midir = { git = "https://github.com/bgaster/midir"}
+
+[dependencies.rimd]
+git = "https://github.com/RustAudio/rimd.git"

@@ -84,7 +84,8 @@ impl <'a>Standalone<'a> {
                     Box::new(LocalSendCB::new(send_from_gui.clone())),
                     bundle.gui.params.clone(), //vec![Value::VFloat(-50.)],
                     "Audio Anywhere",
-                    (900,900)).and_then(|gui| {
+                    //(900,900)).and_then(|gui| {
+                    (1600,1000)).and_then(|gui| {
                         let pa = pa::PortAudio::new().unwrap();
                         let input_device = pa.default_input_device().unwrap();
                         let output_device = pa.default_output_device().unwrap();

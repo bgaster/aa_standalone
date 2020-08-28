@@ -22,6 +22,8 @@ pub enum MsgType {
     ChangeInputDevice = 3,
     ChangeOutputDevice = 4,
     Loaded = 5,
+    NoteOn = 6,
+    NoteOff = 7,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -64,6 +66,14 @@ impl Handler  {
 
     pub fn add_output_device(&mut self, value: Value) {
         self.sender.send(MessageID::AddOutputDevice, 0, value).unwrap();
+    }
+
+    pub fn note_on(&mut self, value: Value) {
+        self.sender.send(MessageID::NoteOn, 0, value);
+    }
+
+    pub fn note_off(&mut self, value: Value) {
+        self.sender.send(MessageID::NoteOff, 0, value);
     }
 
     pub fn loaded(&mut self) {
@@ -170,6 +180,12 @@ impl <'a> GUI<'a> {
                 let mut msgs_consumed = 0;
                 for m in msgs.iter() {
                     match (*m).id {
+                        MessageID::NoteOn => {
+
+                        },
+                        MessageID::NoteOff => {
+
+                        },
                         MessageID::Param => {
                             Self::param_change(&mut self.webview, (*m).index, (*m).value.to_string()).unwrap();
                             msgs_consumed += 1;
@@ -236,6 +252,14 @@ impl <'a> GUI<'a> {
             match message {
                 Ok(message) => {
                     match message.msg {
+                            MsgType::NoteOn => {
+                                return message.value.clone()
+                                    .map_or(Ok(()), |v| { handler.note_on(v); Ok(()) });
+                            },
+                            MsgType::NoteOff => {
+                                return message.value.clone()
+                                    .map_or(Ok(()), |v| { handler.note_off(v); Ok(()) });
+                            },
                             MsgType::SendParam => {
                                 return message.value.clone()
                                     .map_or(Ok(()), |v| { handler.receive(message.index, v); Ok(()) });

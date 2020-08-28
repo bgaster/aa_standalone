@@ -416,6 +416,20 @@ impl <'a>Standalone<'a> {
                 loop {
                     if let Ok(message) = receive_from_gui.try_recv() {
                         match message.id {
+                            MessageID::NoteOn => {
+                                if let Value::VVU8(data) = message.value {
+                                    let note = data[0] as i32;
+                                    let velocity = data[1] as f32 / 127.0;
+                                    let _ = aaunit.borrow().handle_note_on(note, velocity );
+                                }
+                            },
+                            MessageID::NoteOff => {
+                                if let Value::VVU8(data) = message.value {
+                                    let note = data[0] as i32;
+                                    let velocity = data[1] as f32 / 127.0;
+                                    let _ = aaunit.borrow().handle_note_off(note, velocity );
+                                }
+                            },
                             MessageID::Param => {
                                 Self::set_param(&aaunit.borrow(), message.index, message.value);
                             },

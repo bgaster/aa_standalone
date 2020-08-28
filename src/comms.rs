@@ -35,6 +35,10 @@ pub enum MessageID {
     Exit = 6,
     /// add module (to GUI)
     AddModule = 7,
+    /// NoteOn
+    NoteOn = 8,
+    /// NoteOff
+    NoteOff = 9,
 }
 
 /// Simple message format used to communicate between different components, in particular, 

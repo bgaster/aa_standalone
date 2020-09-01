@@ -14,7 +14,7 @@ mod midi_device;
 //-----------------------------------------------------------------------------
 
 fn main() {
-    Standalone::new("http://127.0.0.1:8000")
+    Standalone::new("http://127.0.0.1:8081")
     //Standalone::new("https://bgaster.github.io/audio_anywhere/")
         .unwrap()
         .run()

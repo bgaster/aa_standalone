@@ -150,13 +150,16 @@ impl <'a>Standalone<'a> {
     }
 
     // send a list of params settings, indexed by position in the vector, to GUI
-    fn send_params(comms: &cb::Sender<Message>, params: &Vec<Value>) {
-        for (index, p) in params.iter().enumerate() {
-            comms.send(Message {
-                id: MessageID::Param,
-                index: index as Index, 
-                value: (*p).clone(),
-            }).unwrap();
+    fn send_params(comms: &cb::Sender<Message>, params: &Vec<Vec<Value>>) {
+        for (node, p) in params.iter().enumerate() {
+            for (index, p) in p.iter().enumerate() {
+                comms.send(Message {
+                    id: MessageID::Param,
+                    node: node as u32,
+                    index: index as Index, 
+                    value: (*p).clone(),
+                }).unwrap();
+            }
         }
     }
 
@@ -171,6 +174,7 @@ impl <'a>Standalone<'a> {
     fn send_add_module(comms: &cb::Sender<Message>, name: &str, json_url: &str) {
         comms.send(Message {
             id: MessageID::AddModule,
+            node: 0,
             index: 0,
             value: Value::VString([name, json_url].join("="))
         }).unwrap();
@@ -180,6 +184,7 @@ impl <'a>Standalone<'a> {
     fn send_add_input_device(comms: &cb::Sender<Message>, name: &str, index: pa::DeviceIndex) {
         comms.send(Message {
             id: MessageID::AddInputDevice,
+            node: 0,
             index: 0,
             value: Value::VString([name, &index.0.to_string()].join("="))
         }).unwrap();
@@ -189,6 +194,7 @@ impl <'a>Standalone<'a> {
     fn send_add_output_device(comms: &cb::Sender<Message>, name: &str, index: pa::DeviceIndex) {
         comms.send(Message {
             id: MessageID::AddOutputDevice,
+            node: 0,
             index: 0,
             value: Value::VString([name, &index.0.to_string()].join("="))
         }).unwrap();
@@ -199,28 +205,41 @@ impl <'a>Standalone<'a> {
         // firstly load the json bundle
         get_string(&[url, json].join("/")).and_then(|json| {
             Bundle::from_json(&json).and_then(|bundle| {
-                // Load WASM module
-                get_vec(&[url, &bundle.wasm_url].join("")).and_then(|wasm_code| {
-                    if let Ok(aaunit) = AAUnit::new(&wasm_code[..]) {
+                let mut wasm_bytes = Vec::new();
+                // fetch wasm files
+                for wasm_url in bundle.wasm_url.iter() {
+                    wasm_bytes.push(get_vec(&[url, &wasm_url].join(""))?);
+                }
+                // create module
+                // if let Ok(aaunit) = AAUnit::new(wasm_bytes) {
+                //     Ok((aaunit, bundle))
+                // }
+                // else {
+                //     println!("failed to create aaunit");
+                //     Err(())
+                // }
+                match AAUnit::new(wasm_bytes) {
+                    Ok(aaunit) => {
                         Ok((aaunit, bundle))
-                    }
-                    else {
+                    },
+                    Err(e) => {
+                        println!("failed to create aaunit {:?}", e);
                         Err(())
                     }
-                })
+                }
             })
         })
     }
 
     // set a aaunit parameter
     #[inline]
-    fn set_param(aaunit: &AAUnit, index: Index, param: Value) {
+    fn set_param(aaunit: &AAUnit, node: Index, index: Index, param: Value) {
         match param {
             Value::VFloat(f) => {
-                let _ = aaunit.set_param_float(index, f);
+                let _ = aaunit.set_param_float(node, index, f);
             },
             Value::VInt(i) => {
-                let _ = aaunit.set_param_int(index, i);
+                let _ = aaunit.set_param_int(node, index, i);
             },
             _ => {
             }
@@ -228,9 +247,11 @@ impl <'a>Standalone<'a> {
     }
 
     // set aaunit parameters from a list of parameters
-    fn set_params(aaunit: &AAUnit, params: &Vec<Value>) {
-        for (index, param) in params.iter().enumerate() {
-            Self::set_param(aaunit, index as u32, (*param).clone());
+    fn set_params(aaunit: &AAUnit, params: &Vec<Vec<Value>>) {
+        for (node, p) in params.iter().enumerate() {
+            for (index, param) in p.iter().enumerate() {
+                Self::set_param(aaunit, node as u32, index as u32, (*param).clone());
+            }
         }
     }
 
@@ -286,7 +307,7 @@ impl <'a>Standalone<'a> {
                     if let Ok(message) = receive_from_gui.try_recv() {
                         match message.id {
                             MessageID::Param => {
-                                Self::set_param(&aaunit.borrow(), message.index, message.value);
+                                Self::set_param(&aaunit.borrow(), message.node, message.index, message.value);
                             },
                             MessageID::Control => {},
                             MessageID::ChangeModule 
@@ -431,7 +452,7 @@ impl <'a>Standalone<'a> {
                                 }
                             },
                             MessageID::Param => {
-                                Self::set_param(&aaunit.borrow(), message.index, message.value);
+                                Self::set_param(&aaunit.borrow(), message.node, message.index, message.value);
                             },
                             MessageID::Control => {},
                             MessageID::ChangeModule 
@@ -593,6 +614,7 @@ impl <'a>Standalone<'a> {
         // clear up audio thread
         self.send_from_gui.send(Message {
             id: MessageID::Exit,
+            node: 0,
             index: 0,
             value: Value::VInt(0),
         }).unwrap();

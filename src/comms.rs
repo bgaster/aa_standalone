@@ -47,6 +47,8 @@ pub enum MessageID {
 pub struct Message {
     /// id (type) of meesage
     pub id: MessageID,
+    /// index for node in graph
+    pub node: Index,
     /// index into data (often not used, in that case set to 0)
     pub index: Index,
     /// datagram of message
@@ -59,6 +61,7 @@ impl Message {
     pub fn change_module(url: &str, width: i32, height: i32) -> Self {
         Message {
             id: MessageID::ChangeModule,
+            node: 0,
             index: 0,
             value: Value::VString([url, &width.to_string(), &height.to_string()].join(" ")),
         }
@@ -66,7 +69,7 @@ impl Message {
 }
 
 pub trait Send {
-    fn send(&self, id: MessageID, index: Index, v: Value) -> Result<(), CommsError>;
+    fn send(&self, id: MessageID, node: Index, index: Index, v: Value) -> Result<(), CommsError>;
 }
 
 pub trait Receive {
@@ -89,8 +92,8 @@ impl LocalSend {
 }
 
 impl Send for LocalSend {
-    fn send(&self, id: MessageID, index: Index, value: Value) -> Result<(), ()> {
-        self.sender.send(Message { id, index, value }).map_or(Err(()), |_| Ok(()))
+    fn send(&self, id: MessageID, node: Index, index: Index, value: Value) -> Result<(), ()> {
+        self.sender.send(Message { id, node, index, value }).map_or(Err(()), |_| Ok(()))
     }
 }
 
@@ -107,8 +110,8 @@ impl LocalSendCB {
 }
 
 impl Send for LocalSendCB {
-    fn send(&self, id: MessageID, index: Index, value: Value) -> Result<(), ()> {
-        self.sender.send(Message { id, index, value }).map_or(Err(()), |_| Ok(()))
+    fn send(&self, id: MessageID, node: Index, index: Index, value: Value) -> Result<(), ()> {
+        self.sender.send(Message { id, node, index, value }).map_or(Err(()), |_| Ok(()))
     }
 }
 

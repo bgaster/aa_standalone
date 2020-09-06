@@ -29,6 +29,7 @@ pub enum MsgType {
 #[derive(Deserialize, Debug, Clone)]
 pub struct UIMessage  {
     pub msg: MsgType,
+    pub node: u32,
     pub index: u32,
     pub value: Option<Value>,
 }
@@ -48,8 +49,8 @@ impl Handler  {
         }
     }
 
-    pub fn receive(&mut self, index: Index, value: Value) {
-        self.sender.send(MessageID::Param, index, value ).unwrap();
+    pub fn param(&mut self, node: u32, index: Index, value: Value) {
+        self.sender.send(MessageID::Param, node, index, value ).unwrap();
     }
 
     pub fn console(&self, s: &str) -> () {
@@ -57,28 +58,29 @@ impl Handler  {
     }
 
     pub fn change_module(&mut self, value: Value) {
-        self.sender.send(MessageID::ChangeModule, 0, value).unwrap();
+        self.sender.send(MessageID::ChangeModule, 0, 0, value).unwrap();
     }
 
     pub fn add_input_device(&mut self, value: Value) {
-        self.sender.send(MessageID::AddInputDevice, 0, value).unwrap();
+        self.sender.send(MessageID::AddInputDevice, 0, 0, value).unwrap();
     }
 
     pub fn add_output_device(&mut self, value: Value) {
-        self.sender.send(MessageID::AddOutputDevice, 0, value).unwrap();
+        self.sender.send(MessageID::AddOutputDevice, 0, 0, value).unwrap();
     }
 
     pub fn note_on(&mut self, value: Value) {
-        self.sender.send(MessageID::NoteOn, 0, value);
+        self.sender.send(MessageID::NoteOn, 0, 0, value).unwrap();
     }
 
     pub fn note_off(&mut self, value: Value) {
-        self.sender.send(MessageID::NoteOff, 0, value);
+        self.sender.send(MessageID::NoteOff, 0,  0, value).unwrap();
     }
 
     pub fn loaded(&mut self) {
         self.gui_sender.send(Message {
             id: MessageID::Loaded,
+            node: 0,
             index: 0,
             value: Value::VInt(0),
         }).unwrap();
@@ -100,7 +102,7 @@ impl <'a> GUI<'a> {
     pub fn new(
         html: &str, 
         audio_sender: Box<dyn Send>,
-        params: Vec<Value>,
+        params: Vec<Vec<Value>>,
         title: &'a str,
         size: (i32,i32)) -> Result<Self, ()> {
 
@@ -187,7 +189,7 @@ impl <'a> GUI<'a> {
 
                         },
                         MessageID::Param => {
-                            Self::param_change(&mut self.webview, (*m).index, (*m).value.to_string()).unwrap();
+                            Self::param_change(&mut self.webview, (*m).node, (*m).index, (*m).value.to_string()).unwrap();
                             msgs_consumed += 1;
                         }
                         MessageID::Control => {
@@ -248,7 +250,7 @@ impl <'a> GUI<'a> {
     fn create_javascript_callback(mut handler: Handler) -> JavascriptCallback {
         Box::new(move |webview: &mut web_view::WebView<()>, args: &str| {
             let message : serde_json::Result<UIMessage> = serde_json::from_str(args);
-           //println!("{:?} {}", message, args);
+            //println!("{:?} {}", message, args);
             match message {
                 Ok(message) => {
                     match message.msg {
@@ -262,7 +264,7 @@ impl <'a> GUI<'a> {
                             },
                             MsgType::SendParam => {
                                 return message.value.clone()
-                                    .map_or(Ok(()), |v| { handler.receive(message.index, v); Ok(()) });
+                                    .map_or(Ok(()), |v| { handler.param(message.node, message.index, v); Ok(()) });
                             },
                             MsgType::Console => {
                                 return message.value.clone()
@@ -291,8 +293,8 @@ impl <'a> GUI<'a> {
         })
     }
 
-    fn param_change(webview: &mut WebView<()>, param_index: u32, data: String) -> WVResult {
-        webview.eval(&format!("OnParamChange({},{})", param_index, data)).unwrap();
+    fn param_change(webview: &mut WebView<()>, node_index: u32, param_index: u32, data: String) -> WVResult {
+        webview.eval(&format!("OnParamChange({},{},{})", node_index, param_index, data)).unwrap();
         Ok(())
     }
 

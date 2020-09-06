@@ -7,7 +7,7 @@ use crate::messages::*;
 pub struct GUIBundle {
     pub url: String,
     pub name: String,
-    pub params: Vec<Value>,
+    pub params: Vec<Vec<Value>>,
     pub width: i32,
     pub height: i32, 
 }
@@ -33,7 +33,7 @@ pub struct Info {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Bundle {
-    pub wasm_url: String,
+    pub wasm_url: Vec<String>,
     pub gui: GUIBundle,
     pub info: Info,
 }

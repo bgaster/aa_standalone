@@ -13,7 +13,6 @@ extern crate crossbeam_channel;
 use crossbeam_channel as cb;
 
 use crate::gui::*;
-//use crate::audio_anywhere_wasmtime::*;
 use aa_wasmtime::*;
 use crate::messages::*;
 use crate::comms::*;
@@ -33,7 +32,7 @@ pub struct Standalone<'a> {
     /// default json
     json: String,
     /// input/output midi
-    midi: Midi,
+    midi: Option<Midi>,
     send_from_midi: cb::Sender<MidiMessage>,
     receive_from_midi: cb::Receiver<MidiMessage>,
     /// currently selected audio input device
@@ -54,14 +53,12 @@ pub struct Standalone<'a> {
 }
 
 impl <'a>Standalone<'a> {
-    pub fn new(url: &str) -> Result<Self> {
+    pub fn new(url: &str, midi_device: Option<String>) -> Result<Self> {
        
-        let mut midi = Midi::new();
-        let midi_inputs = midi.get_inputs();
-        println!("{:?}", midi_inputs);
+        //let midi_inputs = midi.get_inputs();
+        //println!("{:?}", midi_inputs);
         
-        // Load GUI HTML, index.html is the same for all anywhere modules
-        let html = get_string(&[url, "index.html"].join("/")).unwrap(); 
+        // Form GUI HTML, index.html is the same for all anywhere modules
         let html = &[url, "index.html"].join("/");
 
         let modules = get_string(&[url, "modules.json"].join("/")).unwrap();
@@ -93,17 +90,31 @@ impl <'a>Standalone<'a> {
                         let comms_sender = gui.comms_sender();
                         let comms = gui.comms();
 
+
+                        let mut midi = 
+                            if let Some(midi_device) = midi_device {
+                                let mut midi = Midi::new();
+                                midi.open_input(
+                                    midi_device, 
+                                        send_from_midi.clone(),
+                                        comms_sender.clone())?;
+                                Some(midi)
+                            } 
+                            else {
+                                None
+                            };
                         // TODO: fix up unwrap()
                         // TODO: Add midi devices to GUI and allows selection
                         // midi.open_input(
                         //     "MPK Mini Mk II".to_string(), 
                         //     send_from_midi.clone(),
                         //     comms_sender.clone()).unwrap();
-                        midi.open_input(
-                            "MidiKeys".to_string(), 
-                            send_from_midi.clone(),
-                            comms_sender.clone()).unwrap();
-                        // midi.open_input("MidiKeys".to_string(), send_from_midi.clone()).unwrap();
+                        // midi.open_input(
+                        //     "MidiKeys".to_string(), 
+                        //     send_from_midi.clone(),
+                        //     comms_sender.clone()).unwrap();
+                        
+                        //midi.open_input("from Max 1".to_string(), send_from_midi.clone()).unwrap();
                         
                         // send Modules to GUI
                         Self::send_modules(&comms_sender, &modules.modules);

@@ -77,9 +77,7 @@ impl Midi {
                                 }
                                 else {
                                     let message = MidiMessage::from_bytes(message.iter().cloned().collect());
-                                    match sender.send(message) {
-                                            _ => {}
-                                    }
+                                    let _ = sender.send(message);
                                 }
                             }, ());
                         

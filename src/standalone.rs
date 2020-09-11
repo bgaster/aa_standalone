@@ -55,9 +55,6 @@ pub struct Standalone<'a> {
 impl <'a>Standalone<'a> {
     pub fn new(url: &str, midi_device: Option<String>) -> Result<Self> {
        
-        //let midi_inputs = midi.get_inputs();
-        //println!("{:?}", midi_inputs);
-        
         // Form GUI HTML, index.html is the same for all anywhere modules
         let html = &[url, "index.html"].join("/");
 
@@ -72,9 +69,6 @@ impl <'a>Standalone<'a> {
             let json = &modules.default.clone();
 
             Self::create_aaunit(url, json, send_from_audio.clone()).and_then(|(aaunit, bundle)| {
-                let html = html.replace("$gui_page$", &bundle.gui.url)
-                    .replace("$width$", &bundle.gui.width.to_string())
-                    .replace("$height$", &bundle.gui.height.to_string());
 
                 GUI::new(
                     &html[..],
@@ -90,9 +84,9 @@ impl <'a>Standalone<'a> {
                         let comms_sender = gui.comms_sender();
                         let comms = gui.comms();
 
-
-                        let mut midi = 
+                        let midi = 
                             if let Some(midi_device) = midi_device {
+                                // install MIDI device
                                 let mut midi = Midi::new();
                                 midi.open_input(
                                     midi_device, 
@@ -101,20 +95,9 @@ impl <'a>Standalone<'a> {
                                 Some(midi)
                             } 
                             else {
+                                // no MIDI device selected
                                 None
                             };
-                        // TODO: fix up unwrap()
-                        // TODO: Add midi devices to GUI and allows selection
-                        // midi.open_input(
-                        //     "MPK Mini Mk II".to_string(), 
-                        //     send_from_midi.clone(),
-                        //     comms_sender.clone()).unwrap();
-                        // midi.open_input(
-                        //     "MidiKeys".to_string(), 
-                        //     send_from_midi.clone(),
-                        //     comms_sender.clone()).unwrap();
-                        
-                        //midi.open_input("from Max 1".to_string(), send_from_midi.clone()).unwrap();
                         
                         // send Modules to GUI
                         Self::send_modules(&comms_sender, &modules.modules);
@@ -234,7 +217,7 @@ impl <'a>Standalone<'a> {
                         Ok((aaunit, bundle))
                     },
                     Err(e) => {
-                        println!("failed to create aaunit {:?}", e);
+                        eprintln!("Failed to create aaunit {:?}", e);
                         Err(())
                     }
                 }

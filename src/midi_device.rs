@@ -70,15 +70,14 @@ impl Midi {
                                     let data       = message[2] as i32;
                                     sender_to_gui.send(Message {
                                         id: MessageID::Control,
+                                        node: 0,
                                         index: controller,
                                         value: Value::VInt(data),
                                     }).unwrap();
                                 }
                                 else {
                                     let message = MidiMessage::from_bytes(message.iter().cloned().collect());
-                                    match sender.send(message) {
-                                            _ => {}
-                                    }
+                                    let _ = sender.send(message);
                                 }
                             }, ());
                         

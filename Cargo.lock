@@ -3,6 +3,7 @@
 [[package]]
 name = "aa_wasmtime"
 version = "0.1.0"
+source = "git+https://github.com/bgaster/aa_wasmtime#cb0b9355131e6a7e57648cda52615e9ff22fe687"
 dependencies = [
  "anyhow",
  "wasmtime",

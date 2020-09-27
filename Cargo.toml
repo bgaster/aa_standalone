@@ -28,7 +28,8 @@ clap = { version = "3.0.0-beta.1" }
 # wasmer-runtime-core = { path = "../wasmer/lib/runtime-core" }
 # wasmer-llvm-backend = { path = "../wasmer/lib/llvm-backend"} 
 
-aa_wasmtime = { path = "../aa_wasmtime/" }
+#aa_wasmtime = { path = "../aa_wasmtime/" }
+aa_wasmtime = { git = "https://github.com/bgaster/aa_wasmtime" }
 
 anyhow = { version = "1.0.32" }
 thiserror = { version = "1.0.20" }

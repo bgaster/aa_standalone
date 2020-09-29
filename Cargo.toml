@@ -10,7 +10,7 @@ edition = "2018"
 #web-view = { version = "0.6.3" }
 #web-view = { path = "../audioplugin_wasm/external/web-view/" }
 #web-view = { git = "https://github.com/bgaster/web-view" }
-web-view = { git = "https://github.com/Boscop/web-view" }
+web-view = { git = "https://github.com/Boscop/web-view", rev = "47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194"}
 # rust-embed = { version = "5.6.0", features = ["interpolate-folder-path"] }
 # rocket = { version = "0.4.5", default-features = false }
 # rocket_contrib = { version = "0.4.5" }
@@ -23,19 +23,20 @@ clap = { version = "3.0.0-beta.1" }
 
 # wasmer-runtime = { version = "0.17.1"}
 # wasmer-runtime-core = { version = "0.17.1" }
-# wasmer-llvm-backend = { version = "0.17.1" } 
+# wasmer-llvm-backend = { version = "0.17.1" }
 # wasmer-runtime = { path = "../wasmer/lib/runtime"}
 # wasmer-runtime-core = { path = "../wasmer/lib/runtime-core" }
-# wasmer-llvm-backend = { path = "../wasmer/lib/llvm-backend"} 
+# wasmer-llvm-backend = { path = "../wasmer/lib/llvm-backend"}
 
 #aa_wasmtime = { path = "../aa_wasmtime/" }
-aa_wasmtime = { git = "https://github.com/bgaster/aa_wasmtime" }
+aa_wasmtime = { git = "https://github.com/bgaster/aa_wasmtime", rev = "cb0b9355131e6a7e57648cda52615e9ff22fe687"}
 
 anyhow = { version = "1.0.32" }
 thiserror = { version = "1.0.20" }
 
 portaudio = "0.7.0"
-midir = { git = "https://github.com/bgaster/midir"}
+midir = { git = "https://github.com/bgaster/midir", rev = "62466b93b6d61f735333304e93f117ede9b8ff91" }
 
 [dependencies.rimd]
 git = "https://github.com/RustAudio/rimd.git"
+rev = "54fd9bd2bd3caaa6fe1c31fbf71c0f3c6597fd1a"

@@ -3,7 +3,7 @@
 [[package]]
 name = "aa_wasmtime"
 version = "0.1.0"
-source = "git+https://github.com/bgaster/aa_wasmtime#cb0b9355131e6a7e57648cda52615e9ff22fe687"
+source = "git+https://github.com/bgaster/aa_wasmtime?rev=cb0b9355131e6a7e57648cda52615e9ff22fe687#cb0b9355131e6a7e57648cda52615e9ff22fe687"
 dependencies = [
  "anyhow",
  "wasmtime",
@@ -42,7 +42,7 @@ dependencies = [
  "alsa-sys",
  "bitflags 1.2.1",
  "libc",
- "nix 0.15.0",
+ "nix",
 ]
 
 [[package]]
@@ -949,7 +949,7 @@ dependencies = [
 [[package]]
 name = "midir"
 version = "0.6.2"
-source = "git+https://github.com/bgaster/midir#0bc86b9a82e422b0995243731bd4f1f5ead243e6"
+source = "git+https://github.com/bgaster/midir?rev=62466b93b6d61f735333304e93f117ede9b8ff91#62466b93b6d61f735333304e93f117ede9b8ff91"
 dependencies = [
  "alsa",
  "bitflags 1.2.1",
@@ -957,7 +957,7 @@ dependencies = [
  "js-sys",
  "libc",
  "memalloc",
- "nix 0.18.0",
+ "nix",
  "wasm-bindgen",
  "web-sys",
  "winapi",
@@ -989,18 +989,6 @@ dependencies = [
  "cfg-if",
  "libc",
  "void",
-]
-
-[[package]]
-name = "nix"
-version = "0.18.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83450fe6a6142ddd95fb064b746083fc4ef1705fe81f64a64e1d4b39f54a1055"
-dependencies = [
- "bitflags 1.2.1",
- "cc",
- "cfg-if",
- "libc",
 ]
 
 [[package]]
@@ -1308,7 +1296,7 @@ dependencies = [
 [[package]]
 name = "rimd"
 version = "0.0.2"
-source = "git+https://github.com/RustAudio/rimd.git#54fd9bd2bd3caaa6fe1c31fbf71c0f3c6597fd1a"
+source = "git+https://github.com/RustAudio/rimd.git?rev=54fd9bd2bd3caaa6fe1c31fbf71c0f3c6597fd1a#54fd9bd2bd3caaa6fe1c31fbf71c0f3c6597fd1a"
 dependencies = [
  "byteorder",
  "encoding",
@@ -1967,7 +1955,7 @@ dependencies = [
 [[package]]
 name = "web-view"
 version = "0.6.3"
-source = "git+https://github.com/Boscop/web-view#47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194"
+source = "git+https://github.com/Boscop/web-view?rev=47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194#47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194"
 dependencies = [
  "boxfnonce",
  "tinyfiledialogs",
@@ -2000,7 +1988,7 @@ dependencies = [
 [[package]]
 name = "webview-sys"
 version = "0.5.1"
-source = "git+https://github.com/Boscop/web-view#47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194"
+source = "git+https://github.com/Boscop/web-view?rev=47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194#47c0581d0b06ac69e8fcbeb9a9c18f1029d0e194"
 dependencies = [
  "cc",
  "gdk-sys",

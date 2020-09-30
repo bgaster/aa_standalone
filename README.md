@@ -53,6 +53,15 @@ interface and a set of example AA modules can be found [here]().
 
 TODO: update with how to connect to a server with AA Modules
 
+# Todo
+
+- [X] Build on Windows 10
+- [ ] Working on Windows 10
+- [ ] Add menu to dynamically select MIDI device
+- [ ] Add MIDI learn functionality
+  - [ ] Select between 0-127 MIDI CC and Endless (as per Push 2 and MIDIFighter)
+- [ ] Add alternative Audio driver support, e.g. optionally not PortAudio
+
 # License
 © 2020 [Benedict R. Gaster (cuberoo_)](https://bgaster.github.io/)
 
